@@ -92,13 +92,12 @@ void
 supercheck(uint64 s)
 {
   pte_t last_pte = 0;
-
   for (uint64 p = s;  p < s + 512 * PGSIZE; p += PGSIZE) {
-    pte_t pte = (pte_t) pgpte((void *) p);
+    pte_t pte = (pte_t) pgpte((void *) p); // va에 대한 pte 반환
     if(pte == 0)
       err("no pte");
     if ((uint64) last_pte != 0 && pte != last_pte) {
-        err("pte different");
+        err("pte different"); // 하나의 superpage의 pte는 하나여야함. 
     }
     if((pte & PTE_V) == 0 || (pte & PTE_R) == 0 || (pte & PTE_W) == 0){
       err("pte wrong");
@@ -109,7 +108,6 @@ supercheck(uint64 s)
   for(int i = 0; i < 512; i += PGSIZE){
     *(int*)(s+i) = i;
   }
-
   for(int i = 0; i < 512; i += PGSIZE){
     if(*(int*)(s+i) != i)
       err("wrong value");
